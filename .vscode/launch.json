@@ -1,0 +1,43 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name":"Tennis Train",
+            "type":"python",
+            "request":"launch",
+            "program":"tennis.py",
+            "console":"integratedTerminal",
+            "args": ["--train", 
+                     "--log_dir", "log_ppo",
+                     "--training_iterations", "100000",
+                     "--gamma", "0.95",
+                     "--tau", "0.01",
+                     "--memory_batch_size", "128"
+                    
+                     ]
+        },
+        {
+            "name":"Tennis Play",
+            "type":"python",
+            "request":"launch",
+            "program":"tennis.py",
+            "console":"integratedTerminal",
+            "args": ["--play",
+                     "--load", "./log_ppo/model/model_56799.pt",
+                     "--log_dir", "log_ppo",
+                     "--episodes", "50",
+                    
+                     ]
+        }
+    ]
+}

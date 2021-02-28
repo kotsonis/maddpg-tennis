@@ -1,3 +1,7 @@
+# unity environment
+Tennis_Windows_x86_64/
+log_ppo/
+log_ppo/model/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
