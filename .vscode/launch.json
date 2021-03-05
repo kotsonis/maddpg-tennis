@@ -19,21 +19,50 @@
             "console":"integratedTerminal",
             "args": ["--train", 
                      "--log_dir", "log_ppo",
-                     "--training_iterations", "100000",
-                     "--gamma", "0.95",
-                     "--tau", "0.01",
-                     "--memory_batch_size", "128"
+                     "--training_iterations", "20000",
+                     "--eps_start", "1.0",
+                     "--eps_minimum", "0.1",
+                     "--eps_decay", "0.999",
+                     "--gamma", "0.995",
+                     "--tau", "0.05", 
+                     "--actor_dnn_dims", "128 64 64",
+                     "--critic_dnn_dims", "128 64 64",
+                     "--memory_batch_size", "512", 
+                     "--n_steps", "15" 
                     
                      ]
         },
         {
-            "name":"Tennis Play",
+            "name":"Tennis Play small",
             "type":"python",
             "request":"launch",
             "program":"tennis.py",
             "console":"integratedTerminal",
             "args": ["--play",
-                     "--load", "./log_ppo/model/model_56799.pt",
+                     "--load", "./log_ppo/model/winning_model_latest.pt",
+                     "--log_dir", "log_ppo",
+                     "--eps_start", "1.0",
+                     "--eps_minimum", "0.1",
+                     "--eps_decay", "0.9995",
+                     "--actor_dnn_dims", "128 128 64",
+                     "--critic_dnn_dims", "128 128 64",
+                     "--episodes", "50",
+                     "--tau", "0.05",
+                     "--memory_batch_size", "512", 
+                     "--n_steps", "7" 
+                    
+                     ]
+        },
+        {
+            "name":"Tennis Play big model",
+            "type":"python",
+            "request":"launch",
+            "program":"tennis.py",
+            "console":"integratedTerminal",
+            "args": ["--play",
+                     "--load", "./log_ppo/model/saved_model_latest.pt",
+                     "--actor_dnn_dims", "512 256 64",
+                     "--critic_dnn_dims", "512 256 64",
                      "--log_dir", "log_ppo",
                      "--episodes", "50",
                     

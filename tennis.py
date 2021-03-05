@@ -8,6 +8,7 @@ import torch.nn.functional as F
 from torch.optim import Adam
 from collections import deque
 from multiagent import MADDPG
+from gaussianagent import MAGPG
 # from agents.ppo import PPOAgent
 from absl import logging
 from absl import flags
@@ -24,6 +25,13 @@ flags.DEFINE_bool(name='train', default=None,
                   help='train the agent')
 flags.DEFINE_integer(name='episodes', default=20,
                      help='number of episodes to run')
+
+flags.DEFINE_float(name='eps_start',default=1.0,
+    help='starting exploration rate (0,1]')
+flags.DEFINE_float(name='eps_minimum',default=0.001,
+    help='minimum exploration rate')
+flags.DEFINE_float(name='eps_decay',default=0.99,
+    help='eps decay rate. eps=eps*eps_decay')
 flags.DEFINE_float(name='gamma',default=0.995,
                    help='discount factor for future rewards (0,1]')
 flags.DEFINE_float(name='tau',default=0.01,
@@ -35,10 +43,32 @@ flags.DEFINE_integer(name='training_iterations',default=2048,
                      help='number of iterations to train on')
 flags.DEFINE_integer(name='memory_batch_size',default=512,
                      help='batch size of memory samples per epoch')
+flags.DEFINE_integer(name='n_steps',default=5,
+                     help='number of steps for N step returns calculation')
+
 flags.DEFINE_bool(name='tb', default=True,
                   help='enable tensorboard logging')
 flags.DEFINE_string(name='device', default='cpu',
                     help="Device to use for torch")
+
+flags.DEFINE_float(name='PER_alpha',default = 0.5,
+                   help='α factor (prioritization) for Prioritized Replay Buffer')
+flags.DEFINE_float(name='PER_beta_min',default = 0.5,
+                   help='starting β factor (randomness) for Prioritized Replay Buffer')
+flags.DEFINE_float(name='PER_beta_max',default=1.0,
+                   help='ending β factor (randomness) for Prioritized Replay Buffer')
+flags.DEFINE_float(name='PER_minimum_priority',default=1e-5,
+                   help='minimum priority to set when updating priorities')
+
+flags.DEFINE_float(name='policy_clip_range', default=0.2,
+    help='clipping threshold for PPO policy optimization')
+flags.DEFINE_float(name='entropy_beta', default=0.002,
+    help='coefficient to multiply beta loss in PPO step')
+
+flags.DEFINE_spaceseplist(name='actor_dnn_dims', default= [128,128,64],
+                          help='layer dimensions of actor NN')
+flags.DEFINE_spaceseplist(name='critic_dnn_dims', default= [128,128,64],
+                          help='layer dimensions of critic NN')
 
 def main(argv):
     del argv
@@ -47,13 +77,27 @@ def main(argv):
             os.makedirs(config.log_dir)
         logging.get_absl_handler().use_absl_log_file()
         logging.set_verbosity('info')
-    env = UnityEnvironment(file_name=config.env, worker_id = 1, no_graphics=config.render)
-    
+    env = UnityEnvironment(file_name=config.env, worker_id = 2, no_graphics=config.render)
+    # convert dnn dims command line parameters to ints
+    actor_dnn_dims = [int(i) for i in config.actor_dnn_dims]
+    critic_dnn_dims = [int(i) for i in config.critic_dnn_dims]
     model = MADDPG(env=env,
+                eps_start = config.eps_start,
+                eps_minimum = config.eps_minimum,
+                eps_decay = config.eps_decay,
                 gamma=config.gamma,
                 tau=config.tau,
                 memory_size = 1e6,
-                batch_size = config.memory_batch_size)
+                batch_size = config.memory_batch_size,
+                learn_every=4,
+                n_steps=config.n_steps,
+                PER_alpha = config.PER_alpha,
+                PER_beta_min = config.PER_beta_min,
+                PER_beta_max = config.PER_beta_max,
+                PER_minimum_priority = config.PER_minimum_priority,
+                actor_hidden_dims= actor_dnn_dims,
+                critic_hidden_dims= critic_dnn_dims,
+                )
     if config.load is not None:
         model.load_model(load_model = config.load)
     if config.play is not None:
