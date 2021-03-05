@@ -8,8 +8,7 @@ import torch.nn.functional as F
 from torch.optim import Adam
 from collections import deque
 from multiagent import MADDPG
-from gaussianagent import MAGPG
-# from agents.ppo import PPOAgent
+
 from absl import logging
 from absl import flags
 config = flags.FLAGS
