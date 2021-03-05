@@ -50,7 +50,7 @@ Create (and activate) a new environment with Python 3.6.
     (_For Windows users_) Check out [this link](https://support.microsoft.com/en-us/help/827218/how-to-determine-whether-a-computer-is-running-a-32-bit-version-or-64) if you need help with determining if your computer is running a 32-bit version or 64-bit version of the Windows operating system.
 
 2. Place the file in the `maddpg-reacher` folder, and unzip (or decompress) the file.
-3. edit [env.cfg](env.cfg) to set the `env` entry to point to the right location. Example :
+3. edit [tennis_env.cfg](tennis_env.cfg) to set the `env` entry to point to the right location. Example :
 ```python 
 --env=./Tennis_Windows_x86_64/Tennis.exe
 ```
@@ -63,18 +63,18 @@ python tennis.py -h
 ```
 
 ### Training
-To train an agent, [tennis.py](tennis.py) reads the hyperparameters from [hyperparams.py](hyperparams.py) and accepts command line options to modify parameters and/or set saving options.You can get the CLI options by running
+To train the agents, [tennis.py](tennis.py) reads the hyperparameters from [training.cfg](training.cfg) and accepts command line options to modify parameters and/or set saving options.You can train the agents with standard parameters as follows
 ```bash
-python train.py -h
+python tennis.py --flagfile=training.cfg
 ```
 ### Playing with a trained model
-you can see the agent playing with the trained model as follows:
+you can see the agents playing with a pre-trained model as follows:
 ```bash
-python play.py
+python tennis.py --flagfile=play.cfg
 ```
 You can also specify the number of episodes you want the agent to play, as well as the non-default trained model as follows:
 ```bash
-python play.py --episodes 20 --model v2_model.pt
+python tennis.py --play --episodes 20 -- v2_model.pt
 ```
 
 ## Implementation and results
