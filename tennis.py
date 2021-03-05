@@ -60,16 +60,14 @@ flags.DEFINE_float(name='PER_beta_max',default=1.0,
 flags.DEFINE_float(name='PER_minimum_priority',default=1e-5,
                    help='minimum priority to set when updating priorities')
 
-flags.DEFINE_float(name='policy_clip_range', default=0.2,
-    help='clipping threshold for PPO policy optimization')
-flags.DEFINE_float(name='entropy_beta', default=0.002,
-    help='coefficient to multiply beta loss in PPO step')
-
 flags.DEFINE_spaceseplist(name='actor_dnn_dims', default= [128,128,64],
                           help='layer dimensions of actor NN')
 flags.DEFINE_spaceseplist(name='critic_dnn_dims', default= [128,128,64],
                           help='layer dimensions of critic NN')
-
+flags.DEFINE_float(name='actor_lr',default=1e-4,
+                   help='lr for actor optimizer')
+flags.DEFINE_float(name='critic_lr',default=1e-4,
+                   help='lr for actor optimizer')
 def main(argv):
     del argv
     if config.log_dir != '':
@@ -96,7 +94,9 @@ def main(argv):
                 PER_beta_max = config.PER_beta_max,
                 PER_minimum_priority = config.PER_minimum_priority,
                 actor_hidden_dims= actor_dnn_dims,
+                actor_lr = config.actor_lr,
                 critic_hidden_dims= critic_dnn_dims,
+                critic_lr = config.critic_lr
                 )
     if config.load is not None:
         model.load_model(load_model = config.load)

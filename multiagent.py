@@ -27,7 +27,9 @@ class MADDPG():
                 learn_every = 20,
                 n_steps = 10,
                 actor_hidden_dims = (128,128,64),
+                actor_lr = 1e-4,
                 critic_hidden_dims = (128,128,64),
+                critic_lr = 1e-4,
                 ** kwargs):
         super(MADDPG,self).__init__()
         self.eps_start = eps_start
@@ -54,11 +56,13 @@ class MADDPG():
                             action_size = self.da, 
                             total_agents=self.num_agents, 
                             actor_activation_fc=F.leaky_relu, 
-                            lr_actor=1e-4,                      # winner : 1e-4
+                            lr_actor=1e-4,                      
                             critic_activation_fc=F.leaky_relu,
-                            lr_critic=1e-4,                     # winner : 1e-4
-                            actor_hidden_dims = actor_hidden_dims,   # winner: (512,256,64)
-                            critic_hidden_dims = critic_hidden_dims,  # winner (512, 256, 64)
+                            lr_critic=1e-4,                     
+                            actor_hidden_dims = actor_hidden_dims, 
+                            actor_lr = actor_lr,  
+                            critic_hidden_dims = critic_hidden_dims,  
+                            critic_lr = critic_lr,
                             gamma = self.discount,
                             tau = self.network_update_factor,
                             action_bounds = self.action_bounds) for _ in range(self.num_agents)]
@@ -69,10 +73,15 @@ class MADDPG():
         if not os.path.exists(self.model_save_dir):
             os.makedirs(self.model_save_dir)
         
+        self.iteration = 0
+        
         self.tb_logging = kwargs.get('tb',config.tb)
         if (self.tb_logging):
-            self._tb_init()
-        self.iteration = 0
+            self.tb_init = self._tb_init
+            self.tb_write = self._tb_write
+        else:
+            self.tb_init = lambda *args: None
+            self.tb_write = lambda *args: None
         # tb tracking fields
         self.tb_loss_agent = self.num_agents*[0.0]
         self.tb_loss_critic = self.num_agents*[0.0]
@@ -80,6 +89,9 @@ class MADDPG():
         self.tb_loss_policy = 0.0
         self.tb_avg_return = 0.0
         self.tb_traj_mean_value = 0.0
+        
+        self.tb_init()
+
         device = "cpu"
         if torch.cuda.is_available():
             device = "cuda:0"
@@ -161,11 +173,11 @@ class MADDPG():
         self._next_eps()
         if (self.iteration+1) % self.model_save_period ==0:
             self.save_model(os.path.join(self.model_save_dir, 'model_{:4d}.pt'.format(self.iteration)))
-        if self.tb_logging and ((self.iteration+1) % self.tensorboard_update_period ==0):
+        if (self.iteration+1) % self.tensorboard_update_period ==0:
             # save latest model
             self.save_model(os.path.join(self.model_save_dir, 'model_latest.pt'))
             # write to tb log
-            self._tb_write()
+            self.tb_write()
         
         return self.iteration
     
