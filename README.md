@@ -34,32 +34,36 @@ Create (and activate) a new environment with Python 3.6.
  Clone the repository and install dependencies
 
 ```shell
-	git clone https://github.com/kotsonis/ddpg-reacher.git
-	cd ddpg-reacher
+	git clone https://github.com/kotsonis/maddpg-tennis.git
+	cd maddpg-reacher
 	pip install -r requirements.txt
 ```
 
-### Install Reacher environment
+### Install Tennis environment
 1. Download the environment from one of the links below.  You need only select the environment that matches your operating system:
 
-   - Linux: [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Reacher/Reacher_Linux.zip)
-   - Mac OSX: [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Reacher/Reacher.app.zip)
-   - Windows (32-bit): [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Reacher/Reacher_Windows_x86.zip)
-   - Windows (64-bit): [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Reacher/Reacher_Windows_x86_64.zip)
+   - Linux: [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P3/Tennis/Tennis_Linux.zip)
+    - Mac OSX: [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P3/Tennis/Tennis.app.zip)
+    - Windows (32-bit): [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P3/Tennis/Tennis_Windows_x86.zip)
+    - Windows (64-bit): [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P3/Tennis/Tennis_Windows_x86_64.zip)
     
     (_For Windows users_) Check out [this link](https://support.microsoft.com/en-us/help/827218/how-to-determine-whether-a-computer-is-running-a-32-bit-version-or-64) if you need help with determining if your computer is running a 32-bit version or 64-bit version of the Windows operating system.
 
-2. Place the file in the `ddpg-reacher` folder, and unzip (or decompress) the file.
-
-3. edit [hyperparams.py](hyperparams.py) to and set the `banana_location` entry to point to the right location. Example :
+2. Place the file in the `maddpg-reacher` folder, and unzip (or decompress) the file.
+3. edit [env.cfg](env.cfg) to set the `env` entry to point to the right location. Example :
 ```python 
-std_learn_params = {
-        # Unity Environment parameters
-        "banana_location": "./Banana_Windows_x86_64/Banana.exe",
+--env=./Tennis_Windows_x86_64/Tennis.exe
 ```
-## Instructions
+
+### Commandline arguments
+maddpg-reacher uses the [Abseil](https://abseil.io/docs/python/quickstart.html) library for logging and argument parsing
+You can get the CLI options by running
+```bash
+python tennis.py -h
+```
+
 ### Training
-To train an agent, [train.py](train.py) reads the hyperparameters from [hyperparams.py](hyperparams.py) and accepts command line options to modify parameters and/or set saving options.You can get the CLI options by running
+To train an agent, [tennis.py](tennis.py) reads the hyperparameters from [hyperparams.py](hyperparams.py) and accepts command line options to modify parameters and/or set saving options.You can get the CLI options by running
 ```bash
 python train.py -h
 ```
