@@ -4,8 +4,9 @@
 This project implements a multi-agent DDPG to learn two agents how to collaborate and play Tennis.
 
 ## Environment particularities
-
-![Trained Agent](./images/trained_agent_gif.gif)
+<p align="center">
+  <img  src="./images/trained_agent_gif.gif">
+</p>
 
 In this environment, two agents control rackets to bounce a ball over a net. If an agent hits the ball over the net, it receives a reward of +0.1.  If an agent lets a ball hit the ground or hits the ball out of bounds, it receives a reward of -0.01.  Thus, the goal of each agent is to keep the ball in play.
 
@@ -17,8 +18,10 @@ The task is episodic, and in order to solve the environment, the agents must get
 
 Reinforcement learning (RL) is one of the three basic machine learning paradigms, together with supervised learning and unsupervised learning. Whereas both supervised and unsupervised learning are concerned with finding an accurate system to predict an output given inputs, RL focuses on Markov Decision Processes (MDPs) and is concerned with the transition from states to states and the reward/cost associated with these transitions.  
 This environment/agent interaction is depicted in below figure:
+<p align="center">
+  <img  src="images/agent_environment.png">
+</p>
 
-![Agent_environment_interagion](./images/agent_environment.png)
 
 Basically, the agent and environment interact in a sequence of discrete time steps t. At each time step t, the agent receives some representation of the environment's state, S<sub>t</sub>&#8712;S, and on that basis selects an action, A<sub>t</sub>&#8712;A(S). At the next timestep t+1, in part as a consequence of its action, the agent receives a scalar reward, R<sub>t+1</sub>&#8712;&#8477;, as well as an new state S<sub>t+1</sub>. The MDP and agent together create a trajectory from an initial time step t over n transitions of states,actions,rewards, and next states as follows:
 
@@ -77,10 +80,14 @@ And the gradient wrt θ becomes:
 <img alt="formula" src="https://render.githubusercontent.com/render/math?math=\begin{align*}%0a\displaystyle \nabla_\theta J_\beta (\mu_\theta) %26\approx \int_S\rho^\beta (s)\nabla_\theta \mu_\theta(a|s)Q^\mu(s,a)ds \\%0A%26=\mathbb{E}_{s\sim \rho^\beta}[\nabla_\theta \mu_\theta (s) \nabla_aQ^\mu(s,a)|_{a=\mu_\theta(s)}]\\%0A\end{align*}%0A">
 
 In the actor-critic setting, critic learns the state value and the state action pair value. This is used to improve the actor (acting as a critic), as depicted in below figure:
-![Actor Critic](images/actor_critic_methods.png)
+<p align="center">
+  <img  src="./images/actor_critic_methods.png">
+</p>
+
 
 Using a experience replay buffer and having two separate actor-critic networks (one being the target), the DDPG algorithm is as follows:
 ![DDPG Algorithm](images/DDPG_algorithm.png)
+
 With the above refresher and definitions, we can move to the presentation of the algorithm implemented.
 
 
@@ -125,5 +132,6 @@ With the above parameters, the agents were able to solve solve the game (average
 
 
 Below is the 100 episode average score per episode, as well as the last episode score per episode.
+<p align=center>
+<img width=400 src="./images/Agents_performance.png"></p>
 
-![training_log](./images/Agents_performance.png)
