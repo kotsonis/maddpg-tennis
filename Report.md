@@ -90,10 +90,36 @@ Using a experience replay buffer and having two separate actor-critic networks (
 
 With the above refresher and definitions, we can move to the presentation of the algorithm implemented.
 
+## Multi Agent Deep Deterministic Policy Gradient Method (MADDPG)
+The algorithm implemented for solving the tennis environment is based on the [MADDPG](https://arxiv.org/pdf/1706.02275.pdf) paper by Lowe et al.
+MADDPG addresses the situation where agents are either competing or need to collaborate in order to maximize their rewards. For example, in the tennis enviroment, the agents will have to learn how to collaborate, since learning to bounce the ball over the net once will not achieve a high score. Instead, the agent needs to make sure that he will send the ball over the net at a place where the opponent can hit it back.
 
-# Neural network architecture
+MADDPG proposes the following methodology for tackling this:
+* During execution, an agent selects an action based solely on the observation it receives. This is important as the agent will not be able to use the observations or actions of other agents to decide on it's action
+* The agent will learn it's policy using the DDPG method previously. Ie, it will learn to take actions that end in a state of maximal value
+* The agent's critic Q, will be producing a value not for the agent's observation/action pair, but will have access to the observations and actions of all agents in the system. Thus the critic will be producing a value for a state (all agent observations concatenated) / actions (all agent actions concatenated) pair
+* The agent's critic is used only in training
 
-## Actor Network
+The above is depicted in below excerpt from the MADDPG paper:
+<p align=center><img src="./images/MADDPG_training_vs_execution.png"></p>
+
+The algorithm for MADDPG is given below:
+<p><img src="./images/MADDPG_algorithm.png"></p>
+
+### Implementation details
+In this project, we made the following modifications to the above algorithm:
+1. **Noise Process**: each agent has it's own Ornstein-Uhlenbeck noise generator, which is used for action exploration. The noise contribution to an action is calculated as follows (with the `noise` factor decaying during training):
+   ```python
+   action = (1-noise)*self.actor(obs) + noise*self.noise.noise()
+   ```
+2. **Replay buffer**: Instead of sampling stochastically from a replay buffer, we implemented a [Prioritized Experience Replay](https://arxiv.org/pdf/1511.05952.pdf) solution. To overcome the fact that each agent may have a different TD Error for a given experience, each agent has a separate buffer, from which he samples with priority during his training step
+3. **n step returns**: As the rewards to an agent are not immediate, to speed up training, an n-step return calculation was implemented. This required that we also make sure that the agents do not take a learning step after each iteration, but only every n-step iterations (to allow for a feedback of the previously selected action to be available in the buffer)
+4. **multiple training steps**: Inspired by REINFORCE, we decided that each time the agents perform a learning iterations, that they sample their buffer and learn multiple times. This allows us to have a smaller batch size, while still covering a considerable amount of experiences in every learning iteration
+
+
+### Neural network architecture
+
+#### Actor Network
 The actor is a function approximator from the observation received by the agent (24 floating point values) to an action (2 floating point values).
 We use a deep neural net to approximate this, with the following characteristics:
 
@@ -109,7 +135,7 @@ output_layer | Fully Connected | 64 | 2 | `tanh` | 130 (64x2 + 2 bias)
 
 The outputs are then scaled and shifted accordingly, since the horizontal movement ranges from [-1.0, 1.0] while the vertical action ranges from [0.0, 1.0]
 
-## Critic network
+#### Critic network
 The actor is a function approximator from the current state of the game and all agents actions to a state action value (1 floating point value).
 We use a deep neural net to approximate this, with the following characteristics:
 
@@ -127,6 +153,39 @@ hidden_layer[1] | Fully Connected | 64 | 64 | `leaky_relu` | 4160 (64x64 + 64 bi
 output_layer | Fully Connected | 64 | 1 | **none** | 65 (64x1 + 1 bias)
 |||||| **29505 total**
 
+## Training parameters
+The following parameters were used for training:
+|Parameter | command line flag | Value
+|---------- | ----------------- | -----
+|**Training**
+|iterations |`--training_iterations`|8000
+|batch size | `--memory_batch_size`|512
+|Network update rate |`--tau`|0.05
+|**Noise**
+|Starting Noise factor | `--eps_start` |1.0
+|Minimum Noise factor | `--eps_minimum` |0.1
+|Noise factor decay rate |`--eps_decay` |0.999
+|**Prioritized Experience Replay**
+|buffer size ||1'000'000
+|n steps |`--n_steps`|15
+|reward discount rate |`--gamma`|0.995
+|α factor (prioritization) for Prioritized Replay Buffer|`--PER_alpha`|0.5
+|starting β factor (randomness) for Prioritized Replay Buffer|`--PER_beta_min`|0.5
+|ending β factor (randomness) for Prioritized Replay Buffer|`--PER_beta_max`|1.0
+|minimum priority to set when updating priorities|`--PER_minimum_priority`|1e-5
+|**Actor**
+|dimension of layers |`--actor_dnn_dims`|[128,64,64]
+|activation fn||`leaky_relu`
+|output activation fn||`tanh`
+|Optimizer||`Adam`
+|Learning rate|`--actor_lr`|0.0001
+|**Critic**
+|dimension of layers |`--actor_dnn_dims`|[128,64,64]
+|activation fn||`leaky_relu`
+|output activation fn||None
+|Optimizer||`Adam`
+|Learning rate|`--critic_lr`|0.0001
+
 ## Results - Plot of scores
 With the above parameters, the agents were able to solve solve the game (average max score over 100 episodes > 0.5) in 2294 episodes (7781 iterations).
 
@@ -134,4 +193,8 @@ With the above parameters, the agents were able to solve solve the game (average
 Below is the 100 episode average score per episode, as well as the last episode score per episode.
 <p align=center>
 <img width=400 src="./images/Agents_performance.png"></p>
+
+During training, the losses for each agent were as follows:
+<p align=center>
+<img width=400 src="./images/agents_training_losses.png"></p>
 
