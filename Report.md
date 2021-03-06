@@ -45,7 +45,7 @@ In the case that the sets S,R,and A are finite, then the MDP is finite and the f
 </math>
 From the <em>dynamics</em> function <em>p</em> we can derive other useful functions:
 
-
+DDPG paper [Continuous control with deep reinforcement learning](https://arxiv.org/abs/1509.02971)
 
 ## Plot of Rewards
 With the above parameters, the agent was able to solve the game (average reward over 100 episodes >2000) in 1198 iterations.
