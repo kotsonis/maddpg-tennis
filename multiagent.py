@@ -56,13 +56,11 @@ class MADDPG():
                             action_size = self.da, 
                             total_agents=self.num_agents, 
                             actor_activation_fc=F.leaky_relu, 
-                            lr_actor=1e-4,                      
+                            lr_actor=actor_lr,                      
                             critic_activation_fc=F.leaky_relu,
-                            lr_critic=1e-4,                     
+                            lr_critic=critic_lr,                     
                             actor_hidden_dims = actor_hidden_dims, 
-                            actor_lr = actor_lr,  
                             critic_hidden_dims = critic_hidden_dims,  
-                            critic_lr = critic_lr,
                             gamma = self.discount,
                             tau = self.network_update_factor,
                             action_bounds = self.action_bounds) for _ in range(self.num_agents)]
@@ -442,7 +440,7 @@ class MADDPG():
                 dones = env_info.local_done
                 if np.any(dones):
                     episode_scores.append(np.max(scores))
-                    print('Episode: {}, max_score: {}, avg_score over episodes: {}'\
+                    print('Episode: {:2d}, max_score: {:.2f}, avg_score over episodes: {:.2f}'\
                            .format(it, np.max(scores), np.mean(episode_scores)))
                     scores *= 0.0
                     break
