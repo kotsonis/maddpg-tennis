@@ -47,6 +47,39 @@ From the <em>dynamics</em> function <em>p</em> we can derive other useful functi
 
 DDPG paper [Continuous control with deep reinforcement learning](https://arxiv.org/abs/1509.02971)
 
+# Neural network architecture
+
+## Actor Network
+The actor is a function approximator from the observation (24 float values) to the agents action (2 float values).
+We use a deep neural net to approximate this, with the following characteristics:
+
+Below is the summary for the actor/policy network. On the hidden layers we use the `ReLU` activation function. On the outputs we use `tanh` to produce actions that are in the desired range -1 to 1.
+
+| Layer | Type | Input | Output | Activation Fn | Parameters
+------------ | ------------- | ------------- | ------------- | ------------- | -------------
+input_layer | Fully Connected | State (24x1) | 128 | `leaky_relu` | 3200 (24x128 + 128 bias)
+hidden_layer[0] | Fully Connected | 128 | 64 | `leaky_relu` | 8256 (128x64 + 64 bias)
+hidden_layer[1] | Fully Connected | 64 | 64 | `leaky_relu` | 4160 (64x64 + 64 bias)
+output_layer | Fully Connected | 64 | 2 | `tanh` | 130 (64x2 + 2 bias)
+
+Total parameters: 15746
+
+
+Below is the summary for the critic/value network. Again we use `ReLU` on the hidden layers. The final layer has no activation function, since Q-values can, in theory, take on any value.
+
+    ----------------------------------------------------------------
+            Layer (type)               Output Shape         Param #
+    ================================================================
+                Linear-1                  [-1, 512]          27,136
+                Linear-2                  [-1, 256]         131,328
+                Linear-3                    [-1, 1]             257
+    ================================================================
+    Total params: 158,721
+    Trainable params: 158,721
+    Non-trainable params: 0
+    ----------------------------------------------------------------
+
+
 ## Plot of Rewards
 With the above parameters, the agent was able to solve the game (average reward over 100 episodes >2000) in 1198 iterations.
 
