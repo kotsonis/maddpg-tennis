@@ -74,7 +74,7 @@ def main(argv):
             os.makedirs(config.log_dir)
         logging.get_absl_handler().use_absl_log_file()
         logging.set_verbosity('info')
-    env = UnityEnvironment(file_name=config.env, worker_id = 2, no_graphics=config.render)
+    env = UnityEnvironment(file_name=config.env, worker_id = 1, no_graphics=config.render)
     # convert dnn dims command line parameters to ints
     actor_dnn_dims = [int(i) for i in config.actor_dnn_dims]
     critic_dnn_dims = [int(i) for i in config.critic_dnn_dims]
