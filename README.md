@@ -37,7 +37,7 @@ Create (and activate) a new environment with Python 3.6.
 
 ```shell
 	git clone https://github.com/kotsonis/maddpg-tennis.git
-	cd maddpg-reacher
+	cd maddpg-tennis
 	pip install -r requirements.txt
 ```
 
@@ -76,7 +76,7 @@ python tennis.py --flagfile=play.cfg
 ```
 You can also specify the number of episodes you want the agent to play, as well as the non-default trained model as follows:
 ```bash
-python tennis.py --play --episodes 20 -- v2_model.pt
+python tennis.py --play --episodes 20 --load v2_model.pt
 ```
 
 ## Implementation and results
