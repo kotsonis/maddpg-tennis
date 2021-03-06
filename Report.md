@@ -50,35 +50,38 @@ DDPG paper [Continuous control with deep reinforcement learning](https://arxiv.o
 # Neural network architecture
 
 ## Actor Network
-The actor is a function approximator from the observation (24 float values) to the agents action (2 float values).
+The actor is a function approximator from the observation received by the agent (24 floating point values) to an action (2 floating point values).
 We use a deep neural net to approximate this, with the following characteristics:
 
-Below is the summary for the actor/policy network. On the hidden layers we use the `ReLU` activation function. On the outputs we use `tanh` to produce actions that are in the desired range -1 to 1.
+Below is the summary for the actor network. On the hidden layers we use the `leaky_relu` activation function. On the outputs we use `tanh` to produce actions that are in the desired range -1.0 to 1.0.
 
 | Layer | Type | Input | Output | Activation Fn | Parameters
 ------------ | ------------- | ------------- | ------------- | ------------- | -------------
-input_layer | Fully Connected | State (24x1) | 128 | `leaky_relu` | 3200 (24x128 + 128 bias)
+input_layer | Fully Connected | obs (24x1) | 128 | `leaky_relu` | 3200 (24x128 + 128 bias)
 hidden_layer[0] | Fully Connected | 128 | 64 | `leaky_relu` | 8256 (128x64 + 64 bias)
 hidden_layer[1] | Fully Connected | 64 | 64 | `leaky_relu` | 4160 (64x64 + 64 bias)
 output_layer | Fully Connected | 64 | 2 | `tanh` | 130 (64x2 + 2 bias)
+|||||| **15746 total**
 
-Total parameters: 15746
+The outputs are then scaled and shifted accordingly, since the horizontal movement ranges from [-1.0, 1.0] while the vertical action ranges from [0.0, 1.0]
 
+## Critic network
+The actor is a function approximator from the current state of the game and all agents actions to a state action value (1 floating point value).
+We use a deep neural net to approximate this, with the following characteristics:
 
-Below is the summary for the critic/value network. Again we use `ReLU` on the hidden layers. The final layer has no activation function, since Q-values can, in theory, take on any value.
+Since the observation size is 24 floating point values, the **state**=(obs size) * num_agents = 24*2 = **48**
+After running the **state** through a first layer of abstraction (`state_input_layer`), we concatenate all the agent **actions** to produce the input to our `input_layer`
 
-    ----------------------------------------------------------------
-            Layer (type)               Output Shape         Param #
-    ================================================================
-                Linear-1                  [-1, 512]          27,136
-                Linear-2                  [-1, 256]         131,328
-                Linear-3                    [-1, 1]             257
-    ================================================================
-    Total params: 158,721
-    Trainable params: 158,721
-    Non-trainable params: 0
-    ----------------------------------------------------------------
+Below is the summary for the critic network. On the hidden layers we use the `leaky_relu` activation function. At the output layer we have no activation funtion.
 
+| Layer | Type | Input | Output | Activation Fn | Parameters
+------------ | ------------- | ------------- | ------------- | ------------- | -------------
+state_input_layer | Fully Connected | state (48) | 128 | `leaky_relu` | 6272 (48x128 + 128 bias)
+input_layer | Fully Connected | 128 + actions (4) | 128 | `leaky_relu` | 17024 (132x128 + 128 bias)
+hidden_layer[0] | Fully Connected | 128 | 64 | `leaky_relu` | 8256 (128x64 + 64 bias)
+hidden_layer[1] | Fully Connected | 64 | 64 | `leaky_relu` | 4160 (64x64 + 64 bias)
+output_layer | Fully Connected | 64 | 1 | **none** | 65 (64x1 + 1 bias)
+|||||| **29505 total**
 
 ## Plot of Rewards
 With the above parameters, the agent was able to solve the game (average reward over 100 episodes >2000) in 1198 iterations.
