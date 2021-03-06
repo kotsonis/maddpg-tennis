@@ -61,7 +61,7 @@ In Q-learning, we consider that π is an optimal policy, that selects the next a
 ### Deep Q Learning Networks
 Mnih et al., in their [DQN](https://web.stanford.edu/class/psych209/Readings/MnihEtAlHassibis15NatureControlDeepRL.pdf) paper, used deep neural networks as a function approximator for the above Q-Learning.
 Specifically, two Q-networks are trained by minimising a sequence of loss functions ![formula](https://render.githubusercontent.com/render/math?math=L_i(\theta_i)) that changes at each iteration i. One Q-network has parameters ![formula](https://render.githubusercontent.com/render/math?math=\theta) and is actively learning, while the second, target, Q-network has parameters ![formula](https://render.githubusercontent.com/render/math?math=\overline{\theta}) and it's parameters are gradually updated with the online's parameters. The loss function is thus
-<img src="https://render.githubusercontent.com/render/math?math=\begin{align*}%0a\displaystyle L_i(\theta_i)%26=\mathbb{E}_{s,a\sim \rho(\cdot)}[(y_i-Q(s,a|\theta_i))^2], \\%0A
+<img alt="formula" src="https://render.githubusercontent.com/render/math?math=\begin{align*}%0a\displaystyle L_i(\theta_i)%26=\mathbb{E}_{s,a\sim \rho(\cdot)}[(y_i-Q(s,a|\theta_i))^2], \\%0A
 y_i %26= \mathbb{E}_{s\prime\sim Env}[r%2b\gamma\displaystyle \max_{a\prime}Q(s',a'|\overline{\theta_i})|s,a]\quad =\text{estimated}\:q\:\text{at iteration}\:i,\\%0A
 \rho(a,s)%26=probability\: distribution\: over\: sequences\: s\: and\: actions\: a\end{align*}%0A">
 
@@ -71,11 +71,9 @@ in the [DDPG](https://arxiv.org/abs/1509.02971) paper, Lillicrap et. al define a
 
 Finding the optimal policy with Q-learning is not trivial on continuous action spaces, since we would need to optimize the selected action at every timestep, requiring computation that will slow down our algorithm.
 Instead, in [policy gradient methods](http://proceedings.mlr.press/v32/silver14.pdf?CFID=6293331&CFTOKEN=eaaee2b6cc8c9889-7610350E-DCAB-7633-E69F572DC210F301), the actor uses a learned policy function approximator <img src="https://render.githubusercontent.com/render/math?math=\mu(s|\theta^\mu):S\gets A "> to select the best action. Learning what action is best given a state is done by maximizing the Q value for the state. Assuming we are sampling actions from a behavior <img src="https://render.githubusercontent.com/render/math?math=\beta=\pi(s,a)"> the objective of the actor becomes:
-<img src="https://render.githubusercontent.com/render/math?math=\begin{align*}%0a\displaystyle J_\beta (\mu_\theta) %26= \int_S\rho^\beta (s)Q^\mu(s,\mu_\theta (s))ds \\%0A%26=\mathbb{E}_{s\sim \rho^\beta}[Q^\mu(s,\mu_\theta (s))]\\%0A
-Loss%26=-\mathbb{E}_{s\sim \rho^\beta}[Q^\mu(s,\mu_\theta (s))]\end{align*}%0A">
+<img alt="formula" src="https://render.githubusercontent.com/render/math?math=\begin{align*}%0a\displaystyle J_\beta (\mu_\theta) %26= \int_S\rho^\beta (s)Q^\mu(s,\mu_\theta (s))ds \\%0A%26=\mathbb{E}_{s\sim \rho^\beta}[Q^\mu(s,\mu_\theta (s))]\\%0A Loss%26=-\mathbb{E}_{s\sim \rho^\beta}[Q^\mu(s,\mu_\theta (s))]\end{align*}%0A">
 And the gradient wrt θ becomes:
-<img src="https://render.githubusercontent.com/render/math?math=\begin{align*}%0a\displaystyle \nabla_\theta J_\beta (\mu_\theta) %26\approx \int_S\rho^\beta (s)\nabla_\theta \mu_\theta(a|s)Q^\mu(s,a)ds \\%0A%26=\mathbb{E}_{s\sim \rho^\beta}[\nabla_\theta \mu_\theta (s) \nabla_aQ^\mu(s,a)|_{a=\mu_\theta(s)}]\\%0A
-\end{align*}%0A">
+<img alt="formula" src="https://render.githubusercontent.com/render/math?math=\begin{align*}%0a\displaystyle \nabla_\theta J_\beta (\mu_\theta) %26\approx \int_S\rho^\beta (s)\nabla_\theta \mu_\theta(a|s)Q^\mu(s,a)ds \\%0A%26=\mathbb{E}_{s\sim \rho^\beta}[\nabla_\theta \mu_\theta (s) \nabla_aQ^\mu(s,a)|_{a=\mu_\theta(s)}]\\%0A\end{align*}%0A">
 
 In the actor-critic setting, critic learns the state value and the state action pair value. This is used to improve the actor (acting as a critic), as depicted in below figure:
 ![Actor Critic](images/actor_critic_methods.png)
