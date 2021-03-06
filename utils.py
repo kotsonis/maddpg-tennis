@@ -1,8 +1,6 @@
 import numpy as np
 import torch 
-
 import operator
-
 class SegmentTree():
     def __init__(self, capacity, operation, neutral_element):
         """Build a Segment Tree data structure.
@@ -20,7 +18,6 @@ class SegmentTree():
         assert capacity > 0 and capacity & (capacity - 1) == 0, "capacity must be positive and a power of 2."
         self._capacity = capacity
         self._value = np.full(2*capacity,neutral_element, dtype=float)
-        #self._value = [neutral_element for _ in range(2 * capacity)] # create array to represent binary tree structure
         self._operation = operation
 
     def _reduce_helper(self, start: int, end:int, node:int, node_start:int, node_end:int):
@@ -121,7 +118,7 @@ class MinSegmentTree(SegmentTree):
         """Returns minimum value of Tree elements from index `start` to index `end` """
         return super(MinSegmentTree, self).reduce(start, end)
 
-
+#  Ornstein-Uhlenbeck Noise class
 # from https://github.com/songrotek/DDPG/blob/master/ou_noise.py
 class OUNoise:
 
