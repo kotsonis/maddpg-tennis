@@ -83,7 +83,7 @@ hidden_layer[1] | Fully Connected | 64 | 64 | `leaky_relu` | 4160 (64x64 + 64 bi
 output_layer | Fully Connected | 64 | 1 | **none** | 65 (64x1 + 1 bias)
 |||||| **29505 total**
 
-## Results - Plot of rewardss
+## Results - Plot of scores
 With the above parameters, the agents were able to solve solve the game (average max score over 100 episodes > 0.5) in 2294 episodes (7781 iterations).
 
 
