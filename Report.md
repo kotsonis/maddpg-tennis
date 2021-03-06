@@ -198,3 +198,6 @@ During training, the losses for each agent were as follows:
 <p align=center>
 <img width=400 src="./images/agents_training_losses.png"></p>
 
+## Further work
+- Replace the action noise with parameter noise, as detailed in paper [Parameter Space Noise for Exploration](https://arxiv.org/pdf/1706.01905.pdf)
+- Instead of having a separate replay buffer per agent, implement a common experience repository, with separate priority sum and min trees per agent
