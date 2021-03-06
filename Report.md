@@ -83,10 +83,10 @@ hidden_layer[1] | Fully Connected | 64 | 64 | `leaky_relu` | 4160 (64x64 + 64 bi
 output_layer | Fully Connected | 64 | 1 | **none** | 65 (64x1 + 1 bias)
 |||||| **29505 total**
 
-## Plot of Rewards
-With the above parameters, the agent was able to solve the game (average reward over 100 episodes >2000) in 1198 iterations.
+## Results - Plot of rewardss
+With the above parameters, the agents were able to solve solve the game (average max score over 100 episodes > 0.5) in 2294 episodes (7781 iterations).
 
 
-Below is the 100 episode average reward per iteration, as well as the objective value per iteration.
+Below is the 100 episode average score per episode, as well as the last episode score per episode.
 
-![training_log](./images/return_and_objective_vs_step.png)
+![training_log](./images/Agents_performance.png)
